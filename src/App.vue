@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Renderer from './components/blocks/Renderer.vue';
+import { ref, onMounted, defineProps, computed } from 'vue';
+import Settings from './components/layout/Settings.vue';
+import Header from "./components/layout/Header.vue";
+import Renderer from "./components/blocks/Renderer.vue";
 import Range from './components/ui/controls/Range.vue';
 import useEditor from './store/Editor';
 import { type Text } from './types/Text';
@@ -15,7 +17,20 @@ import { Block } from './types/Block';
 import { Avatar } from './types/Avatar';
 import { Button } from './types/Button';
 import { Columns } from './types/Columns';
-const { addBlock, rootBlocks } = useEditor();
+
+
+const props = defineProps<{
+  emailId?: string;
+}>();
+const { addBlock, rootBlocks, setEmailId, undo, redo } = useEditor();
+
+onMounted(() => {  
+    const emailId = props.emailId || crypto.randomUUID();
+    setEmailId(emailId);
+});
+
+
+
 const fontSize = ref(16);
 const align = ref('left');  
 const options: Option[] = [
@@ -58,24 +73,34 @@ addBlock({
 } as Columns)
 const generatedHTML = ref('');
 const generateHTML = () => {
-    generatedHTML.value = generateEmailHTML(rootBlocks.value as Block[]);
+    generatedHTML.value = generateEmailHTML(rootBlocks.value as Block[]);  
 };
+const currentSize = ref('desktop');
+const canvasClass = computed(() =>
+  currentSize.value === "mobile" ? "mobile-view" : ""
+);
+
+const resize = (size: "mobile" | 'desktop') => {
+  currentSize.value = size;
+};
+
 </script>
 <template>
-  <Range id="font-size" name="font-size" v-model="fontSize" suffix="px" :max="30">
-    Font size <template #icon><FormatSize class="size-4" /></template>
-  </Range>
-  <RadioCards :options grid="lg:grid-cols-4" v-model="align">
-    >test
-    <template #item="{ item }">
-      <FormatAlignLeft class="size-6" v-if="item === 'left'" />
-      <FormatAlignCenter class="size-6" v-if="item === 'center'" />
-      <FormatAlignRight class="size-6" v-if="item === 'right'" />
-      <FormatAlignJustify class="size-6" v-if="item === 'justify'" />
-    </template>
-  </RadioCards>
-  <Renderer :blocks="rootBlocks" />
-    <button @click="generateHTML">Generate HTML</button>
-    <pre>{{ generatedHTML }}</pre>
+  <div class="flex h-screen">
+    <!-- Main Content Area -->
+    <main class="flex-1 bg-white p-4">
+      <Header
+        :size="currentSize"
+        @resize="resize"
+      />
+        <div id="canvas" :class="canvasClass">
+              <Renderer :blocks="rootBlocks" />
+        </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="w-96 bg-gray-100 p-4">
+      <Settings />
+    </aside>
+  </div>
 </template>
-<style scoped></style>
