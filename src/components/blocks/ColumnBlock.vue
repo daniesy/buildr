@@ -9,5 +9,7 @@ const { block } = defineProps<{
 </script>
 
 <template>
+  <div class="column-content">
     <Renderer :blocks="block.children as Block[]" />
+  </div>
 </template>
