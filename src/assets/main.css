@@ -3,3 +3,5 @@
 @theme {
     --font-sans: InterVariable, sans-serif;
 }
+
+@source "../../node_modules/@daniesy/finder";

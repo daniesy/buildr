@@ -34,102 +34,101 @@
       </div>
 
       <div class="grid grid-cols-2 gap-4">
-         <NumberInput v-model="borderRadius" label="Border Radius (px)" :min="0" />
-         <NumberInput v-model="borderWidth" label="Border Width (px)" :min="0" />
+        <NumberInput v-model="borderRadius" label="Border Radius (px)" :min="0" />
+        <NumberInput v-model="borderWidth" label="Border Width (px)" :min="0" />
       </div>
-       <ColorPicker v-model="borderColor" label="Border Color" />
-
-
+      <ColorPicker v-model="borderColor" label="Border Color" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
-import { RadioCards, TextInput, ColorPicker, NumberInput } from '@/components/ui/controls';
+import { computed } from 'vue';
+import {
+  ColorPicker,
+  NumberInput,
+  RadioCards,
+  TextInput,
+} from '@/components/ui/controls/components';
 import useEditor from '@/store/Editor';
-import { type Button } from '@/types/Button'; // Assuming Button type includes style properties
-import { type BlockWithButtonStyle } from '@/types/BlockWithButtonStyle';
-
+import { type Button } from '@/types/blocks/Button';
+import { type BlockWithButtonStyle } from '@/types/styles/BlockWithButtonStyle';
 
 const props = defineProps({
-    blockId: {
-        type: String,
-        required: true,
-    },
+  blockId: {
+    type: String,
+    required: true,
+  },
 });
 
 const { updateBlock, getBlock } = useEditor();
 
 // Computed property for the entire block
 const block = computed({
-    get: () => getBlock.value(props.blockId) as Button,
-    set: (value) => updateBlock(props.blockId, value),
+  get: () => getBlock.value(props.blockId) as Button,
+  set: (value) => updateBlock(props.blockId, value),
 });
 
 // Computed property for the block's style
 const style = computed({
-    get: () => (block.value as BlockWithButtonStyle).style || {},
-    set: (value) => block.value = { ...block.value, style: value },
+  get: () => (block.value as BlockWithButtonStyle).style || {},
+  set: (value) => (block.value = { ...block.value, style: value }),
 });
-
 
 // Computed properties for individual fields, using block.value
 const text = computed({
-    get: () => block.value.text || '',
-    set: (value) => block.value = { ...block.value, text: value },
+  get: () => block.value.text || '',
+  set: (value) => (block.value = { ...block.value, text: value }),
 });
 
 const href = computed({
-    get: () => block.value.href || '',
-    set: (value) => block.value = { ...block.value, href: value },
+  get: () => block.value.href || '',
+  set: (value) => (block.value = { ...block.value, href: value }),
 });
 
 const size = computed({
-    get: () => block.value.size || 'md',
-    set: (value) => block.value = { ...block.value, size: value },
+  get: () => block.value.size || 'md',
+  set: (value) => (block.value = { ...block.value, size: value }),
 });
 
 const target = computed({
-    get: () => block.value.target || '_self',
-    set: (value) => block.value = { ...block.value, target: value },
+  get: () => block.value.target || '_self',
+  set: (value) => (block.value = { ...block.value, target: value }),
 });
 
 // Computed properties for style fields
 const backgroundColor = computed({
-    get: () => style.value.backgroundColor || '#000000',
-    set: (value) => style.value = { ...style.value, backgroundColor: value },
+  get: () => style.value.backgroundColor || '#000000',
+  set: (value) => (style.value = { ...style.value, backgroundColor: value }),
 });
 
 const textColor = computed({
-    get: () => style.value.textColor || '#ffffff',
-    set: (value) => style.value = { ...style.value, textColor: value },
+  get: () => style.value.textColor || '#ffffff',
+  set: (value) => (style.value = { ...style.value, textColor: value }),
 });
 
 const paddingX = computed({
-    get: () => style.value.paddingX ?? 16, // Default value if undefined
-    set: (value) => style.value = { ...style.value, paddingX: value },
+  get: () => style.value.paddingX ?? 16, // Default value if undefined
+  set: (value) => (style.value = { ...style.value, paddingX: value }),
 });
 
 const paddingY = computed({
-    get: () => style.value.paddingY ?? 8, // Default value if undefined
-    set: (value) => style.value = { ...style.value, paddingY: value },
+  get: () => style.value.paddingY ?? 8, // Default value if undefined
+  set: (value) => (style.value = { ...style.value, paddingY: value }),
 });
 
 const borderRadius = computed({
-    get: () => style.value.borderRadius ?? 4, // Default value if undefined
-    set: (value) => style.value = { ...style.value, borderRadius: value },
+  get: () => style.value.borderRadius ?? 4, // Default value if undefined
+  set: (value) => (style.value = { ...style.value, borderRadius: value }),
 });
 
 const borderWidth = computed({
-    get: () => style.value.borderWidth ?? 0, // Default value if undefined
-    set: (value) => style.value = { ...style.value, borderWidth: value },
+  get: () => style.value.borderWidth ?? 0, // Default value if undefined
+  set: (value) => (style.value = { ...style.value, borderWidth: value }),
 });
 
 const borderColor = computed({
-    get: () => style.value.borderColor || '#000000',
-    set: (value) => style.value = { ...style.value, borderColor: value },
+  get: () => style.value.borderColor || '#000000',
+  set: (value) => (style.value = { ...style.value, borderColor: value }),
 });
-
-
 </script>

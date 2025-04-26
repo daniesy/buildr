@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { type Block } from '@/types/Block';
-import { type Text } from '@/types/Text';
-import { type Column } from '@/types/Column';
-import { type Avatar } from '@/types/Avatar';
-import { type Button } from '@/types/Button';
-import { type Columns } from '@/types/Columns';
-import { type Container } from '@/types/Container';
-import { type Divider } from '@/types/Divider';
-import { type Heading } from '@/types/Heading';
-import { type HTML } from '@/types/HTML';
-import { type Image } from '@/types/Image';
-import { type Spacer } from '@/types/Spacer';
+import { type Block } from '@/types/blocks/Block';
+import { type Text } from '@/types/blocks/Text';
+import { type Column } from '@/types/blocks/Column';
+import { type Avatar } from '@/types/blocks/Avatar';
+import { type Button } from '@/types/blocks/Button';
+import { type Columns } from '@/types/blocks/Columns';
+import { type Container } from '@/types/blocks/Container';
+import { type Divider } from '@/types/blocks/Divider';
+import { type Heading } from '@/types/blocks/Heading';
+import { type HTML } from '@/types/blocks/HTML';
+import { type Image } from '@/types/blocks/Image';
+import { type Spacer } from '@/types/blocks/Spacer';
 import TextBlock from './TextBlock.vue';
 import AvatarBlock from './AvatarBlock.vue';
 import ButtonBlock from './ButtonBlock.vue';
@@ -122,6 +122,10 @@ const moveBlockDown = (index: number) => {
 };
 
 const deleteBlock = (blockId: string) => {
+  if (activeBlockId.value === blockId) {
+    // Clear the active block reference when the active block is deleted
+    activateBlock(null);
+  }
   removeBlock(blockId);
 };
 </script>
@@ -133,7 +137,18 @@ const deleteBlock = (blockId: string) => {
       <button @click="deleteBlock(block.id)">🗑️</button>
       <button @click="moveBlockDown(index)" :disabled="index === blocks.length - 1">⬇️</button>
     </div>
-    <div @click.prevent="activateBlock(block.id)">
+    <div
+      @click.prevent="activateBlock(block.id)"
+      :class="[
+        'transition-all duration-150',
+        'relative',
+        'group',
+        activeBlockId === block.id
+          ? 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50/40 shadow-lg rounded-lg z-10'
+          : 'hover:ring-1 hover:ring-blue-300 hover:bg-blue-50/10 rounded-lg',
+      ]"
+      style="cursor: pointer"
+    >
       <component :is="findComponent(block)" :block="casted(block)" />
     </div>
   </div>
@@ -151,5 +166,6 @@ const deleteBlock = (blockId: string) => {
   right: 0;
   display: flex;
   gap: 8px;
+  z-index: 20;
 }
 </style>

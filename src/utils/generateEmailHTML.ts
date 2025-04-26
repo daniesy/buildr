@@ -1,15 +1,15 @@
-import { Block } from "../types/Block";
-import { Text } from "../types/Text";
-import { Avatar } from "../types/Avatar";
-import { Button } from "../types/Button";
-import { Columns } from "../types/Columns";
-import { Container } from "../types/Container";
-import { Divider } from "../types/Divider";
-import { Heading } from "../types/Heading";
-import { HTML as HTMLBlockType } from "../types/HTML";
-import { Image } from "../types/Image";
-import { Spacer } from "../types/Spacer";
-import { Column } from "../types/Column";
+import { Block } from "../types/blocks/Block";
+import { Text } from "../types/blocks/Text";
+import { Avatar } from "../types/blocks/Avatar";
+import { Button } from "../types/blocks/Button";
+import { Columns } from "../types/blocks/Columns";
+import { Container } from "../types/blocks/Container";
+import { Divider } from "../types/blocks/Divider";
+import { Heading } from "../types/blocks/Heading";
+import { HTML as HTMLBlockType } from "../types/blocks/HTML";
+import { Image } from "../types/blocks/Image";
+import { Spacer } from "../types/blocks/Spacer";
+import { Column } from "../types/blocks/Column";
 
 function renderBlock(block: Block): string {
   switch (block.type) {

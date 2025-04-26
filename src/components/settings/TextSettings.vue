@@ -1,112 +1,101 @@
 <template>
-  <div>
-    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Text Settings</h3>
-    <div class="space-y-4">
-      <!-- Corrected prop name: elementTag -> tag -->
-      <ContentEditable v-model="text" label="Text" :tag="'div'" />
-
-      <div class="grid grid-cols-2 gap-4">
-         <NumberInput v-model="fontSize" label="Font Size (px)" :min="1" />
-         <NumberInput v-model="lineHeight" label="Line Height (%)" :min="100" :step="10"/>
-      </div>
-
-       <RadioCards
-        v-model="align"
-        label="Text Align"
-        :options="[
-          { value: 'left', slot: 'align-left' },
-          { value: 'center', slot: 'align-center' },
-          { value: 'right', slot: 'align-right' },
-        ]"
-      >
-       <template #align-left><FormatAlignLeft /></template>
-       <template #align-center><FormatAlignCenter /></template>
-       <template #align-right><FormatAlignRight /></template>
-      </RadioCards>
-
-      <ColorPicker v-model="textColor" label="Text Color" />
-
-      <div class="grid grid-cols-2 gap-4">
-        <NumberInput v-model="paddingX" label="Padding X (px)" :min="0" />
-        <NumberInput v-model="paddingY" label="Padding Y (px)" :min="0" />
-      </div>
-
-    </div>
+  <TextContent v-model="text" />
+  <div class="flex gap-3 justify-between">
+    <ColorPicker
+      v-model="textColor"
+      :used-colors="usedColors"
+      default-color="#fff"
+      name="text-color"
+      horizontal
+    >
+      Text Color
+    </ColorPicker>
+    <ColorPicker
+      v-model="backgroundColor"
+      :used-colors="usedColors"
+      default-color="transparent"
+      name="background-color"
+      horizontal
+    >
+      Background Color
+    </ColorPicker>
   </div>
+  <FontSize v-model="fontSize" />
+  <FontWeight v-model="fontWeight" />
+  <TextAlign v-model="align" />
+  <Padding v-model="padding" />
+  <Margin v-model="margin" />
+  <BorderRadius v-model="borderRadius" />
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
-// Corrected import path
-import { RadioCards, ColorPicker, NumberInput } from '@/components/ui';
-import ContentEditable from '@/components/ui/ContentEditable.vue';
-import { FormatAlignLeft, FormatAlignCenter, FormatAlignRight } from '@/components/icons/icons';
+import { computed, ref } from 'vue';
 import useEditor from '@/store/Editor';
-import { type Text } from '@/types/Text';
-// Corrected import name
-import { type TextGeneralStyle } from '@/types/BlockWithTextStyle';
+import { TextStyle } from '@/types/styles/TextStyle';
+import {
+  BorderRadius,
+  FontSize,
+  FontWeight,
+  Margin,
+  Padding,
+  TextAlign,
+  TextContent,
+} from '@/components/ui/block-controls/all';
+import ColorPicker from '@/components/ui/controls/ColorPicker.vue';
 
-
-// Use type-based declaration for defineProps
-interface Props {
+const { blockId } = defineProps<{
   blockId: string;
-}
-const props = defineProps<Props>();
+}>();
 
-const { updateBlock, getBlock } = useEditor();
+const { updateProperty, getProperty, usedColors } = useEditor();
 
-// Computed property for the entire block
-const block = computed({
-    get: () => getBlock.value(props.blockId) as Text,
-    set: (value) => updateBlock(props.blockId, value),
+const text = computed<string>({
+  get: () => getProperty(blockId, 'text') as string,
+  set: (value: string) => updateProperty(blockId, 'text', value),
 });
 
-// Computed property for the block's style
-const style = computed({
-    // Corrected type casting
-    get: () => (block.value as { style?: TextGeneralStyle })?.style || {},
-    set: (value) => block.value = { ...block.value, style: value },
+const style = computed<TextStyle>({
+  get: () => getProperty(blockId, 'style') as TextStyle,
+  set: (value: TextStyle) => updateProperty(blockId, 'style', value),
 });
 
-// Computed properties for individual fields
-const text = computed({
-    get: () => block.value.text || '',
-    set: (value) => block.value = { ...block.value, text: value },
+const fontSize = computed<string>({
+  get: () => style.value.fontSize,
+  set: (value: string) => (style.value.fontSize = value),
 });
 
-// Computed properties for style fields
-const fontSize = computed({
-    get: () => style.value.fontSize ?? 16,
-    set: (value) => style.value = { ...style.value, fontSize: value },
+const fontWeight = computed<string>({
+  get: () => style.value.fontWeight,
+  set: (value: string) => (style.value.fontWeight = value),
 });
 
-const lineHeight = computed({
-    get: () => style.value.lineHeight ?? 140, // Default to 140%
-    set: (value) => style.value = { ...style.value, lineHeight: value },
+const align = computed<'left' | 'center' | 'right'>({
+  get: () => style.value.align,
+  set: (value: 'left' | 'center' | 'right') => (style.value.align = value),
 });
 
-const align = computed({
-    get: () => style.value.align || 'left',
-    set: (value) => style.value = { ...style.value, align: value },
+const padding = computed<string>({
+  get: () => style.value.padding,
+  set: (value: string) => (style.value.padding = value),
 });
 
-const textColor = computed({
-    get: () => style.value.textColor || '#000000',
-    set: (value) => style.value = { ...style.value, textColor: value },
+const margin = computed<string>({
+  get: () => style.value.margin,
+  set: (value: string) => (style.value.margin = value),
 });
 
-const paddingX = computed({
-    get: () => style.value.paddingX ?? 0,
-    set: (value) => style.value = { ...style.value, paddingX: value },
+const borderRadius = computed<string>({
+  get: () => style.value.borderRadius,
+  set: (value: string) => (style.value.borderRadius = value),
 });
 
-const paddingY = computed({
-    get: () => style.value.paddingY ?? 0,
-    set: (value) => style.value = { ...style.value, paddingY: value },
+const backgroundColor = computed<string>({
+  get: () => style.value.backgroundColor,
+  set: (value: string) => (style.value.backgroundColor = value),
 });
 
+const textColor = computed<string>({
+  get: () => style.value.textColor,
+  set: (value: string) => (style.value.textColor = value),
+});
 </script>
-
-<style scoped>
-/* Optional: Add specific styles for TextSettings if needed */
-</style>

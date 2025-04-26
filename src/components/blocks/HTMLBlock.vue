@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type HTML } from '@/types/HTML';
+import { type HTML } from '@/types/blocks/HTML';
 
 const { block } = defineProps<{
   block: HTML;

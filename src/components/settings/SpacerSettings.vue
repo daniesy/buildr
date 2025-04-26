@@ -5,32 +5,38 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import NumberInput from '../ui/controls/NumberInput.vue';
-import ColorPicker from '../ui/controls/ColorPicker.vue';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { type Spacer } from '@/types/blocks/Spacer';
+import { NumberInput, ColorPicker } from '@/components/ui/controls/components';
+import useEditor from '@/store/Editor';
 
 const props = defineProps({
-  height: {
-    type: Number,
-    required: true,
-  },
-  spacerColor: {
+  blockId: {
     type: String,
     required: true,
   },
 });
 
-const emit = defineEmits(['update:height', 'update:spacerColor']);
+const { updateBlock, getBlock } = useEditor();
 
-const height = ref(props.height);
-const spacerColor = ref(props.spacerColor);
-
-watch(height, (newValue) => {
-  emit('update:height', newValue);
+const block = computed({
+  get: () => getBlock.value(props.blockId) as Spacer,
+  set: (value) => updateBlock(props.blockId, value),
 });
 
-watch(spacerColor, (newValue) => {
-  emit('update:spacerColor', newValue);
+const style = computed({
+  get: () => block.value.style || {},
+  set: (value) => (block.value = { ...block.value, style: value }),
+});
+
+const height = computed({
+  get: () => style.value.height ?? 0,
+  set: (value) => (style.value = { ...style.value, height: value }),
+});
+
+const spacerColor = computed({
+  get: () => style.value.spacerColor || '#000000',
+  set: (value) => (style.value = { ...style.value, spacerColor: value }),
 });
 </script>

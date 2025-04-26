@@ -1,6 +1,9 @@
 <script setup>
-import { defineProps, defineModel, computed } from 'vue';
-import { TextInput, NumberInput } from '@/components/ui/controls';
+import { defineModel, computed } from 'vue';
+import {
+  NumberInput,
+  TextInput,
+} from '@/components/ui/controls/components';
 import useEditor from '@/store/Editor';
 const props = defineProps({
   blockId: {

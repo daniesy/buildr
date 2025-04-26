@@ -1,25 +1,31 @@
 <template>
   <div>
-    <TextInput label="HTML" v-model="html" />
+    <TextInput label="HTML" v-model="htmlContent" />
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import TextInput from '../ui/controls/TextInput.vue';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { type HTML } from '@/types/blocks/HTML';
+import { TextInput } from '@/components/ui/controls/components';
+import useEditor from '@/store/Editor';
 
 const props = defineProps({
-  modelValue: {
+  blockId: {
     type: String,
-    default: '',
+    required: true,
   },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const { updateBlock, getBlock } = useEditor();
 
-const html = ref(props.modelValue);
+const block = computed({
+  get: () => getBlock.value(props.blockId) as HTML,
+  set: (value) => updateBlock(props.blockId, value),
+});
 
-watch(html, (newValue) => {
-  emit('update:modelValue', newValue);
+const htmlContent = computed({
+  get: () => block.value.html || '',
+  set: (value) => (block.value = { ...block.value, html: value }),
 });
 </script>
